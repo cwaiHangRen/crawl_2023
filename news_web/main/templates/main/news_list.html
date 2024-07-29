@@ -1,0 +1,235 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body, ul {
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background: linear-gradient(to bottom, #00BFFF, #0066CC);
+            color: white; 
+            text-align: center; 
+            padding:20px 0; 
+            margin:0; 
+            top:0;
+            width: 100%; 
+            box-shadow: 0 2px 4px #ccc(0, 0, 0, 0.2); /* 添加阴影，制造立体感 */
+        }
+
+
+        .navbar a {
+            text-decoration: none; 
+            color: white; 
+            margin: 0 50px; 
+            font-size: large;
+        }
+        h1 {text-align: center;color: #333;}
+        h2 {
+            text-align: right;
+            font-family: Arial, sans-serif; 
+            font-size: 30px; 
+            font-weight: bold; 
+            color: #333; 
+        }
+        h2.center {
+            text-align: right;
+            margin-right: 200px; 
+        }
+        .news-container {
+            background-color: white; 
+            border-radius: 20px; 
+            border-color: #B0C4DE;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); 
+            padding: 20px; 
+            margin: 20px; 
+            border: 0.1px solid #333;
+        }
+        div {
+            text-align:left;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: space-between; 
+        }
+        li {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 10px;
+            background-color: #f5f5f5;
+            flex: 1; 
+            min-width: calc(50% - 10px);
+        }
+        li a {text-decoration: none;}
+        div button {
+            padding: 10px 20px; 
+            font-size: 16px; 
+            margin:0 auto;
+        }
+        li a {
+            display: block;
+            text-align: left;
+        }
+        li .author{
+            color:#708090;
+        }
+        li .text{
+            color:#B0C4DE;
+        }
+        .refresh-button {
+            padding: 5px 10px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .fa-sync-alt {
+            margin-right: 5px;
+        }
+        a.news_title{
+            color:black;
+            font-size: large;
+        }
+        .news-icon {
+            margin-right: 10px;
+            font-size: xx-large;
+        }
+        body {
+        margin-left: 200px; 
+        margin-right: 200px; 
+        }
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        pagination-link {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .current-page {
+            margin: 0 10px;
+            font-weight: bold;
+        }
+
+        .page-form {
+            display: inline-block;
+            margin: 0 10px;
+        }
+
+        .page-input {
+            width: 50px;
+            padding: 5px;
+            font-size: 14px;
+        }
+
+        .pagination-button {
+            padding: 5px 10px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .news-item {
+            display: flex; 
+            align-items: center; 
+            margin-bottom: 20px; 
+        }
+        .button{
+            padding: 5px 10px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none; 
+        }
+        .pagination-button{
+            padding: 5px 10px;
+            font-size: 16px;
+            background-color: #778899;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none; 
+        }
+    </style>
+    <title>新闻列表页</title>
+</head>
+<body>
+    <div class="navbar">
+        <i class="fas fa-newspaper news-icon"></i>
+        <a href="http://127.0.0.1:8000/main/">新闻主页</a>
+        <a href="http://127.0.0.1:8000/main/category/">新闻分类</a>
+        <a href="http://127.0.0.1:8000/main/news_list/">新闻列表</a>
+        <a href="http://127.0.0.1:8000/main/search">新闻搜索</a>
+    </div>
+    <h1>新闻列表</h1>
+    <div>
+        <div class="news-container">
+            <ul>
+                {% for news_item in news_list %}
+                    <li class="news-item">
+                        <div class="image-container">
+                            <img src="{% if news_item.image_set.all.count %}/main/images/{{ news_item.image_set.first.image_file }}{% else %}/main/images/default.jpg{% endif %}" alt="News Image" style="width: 200px; height: 150px;">
+                        </div>
+                        <div class="news-info" style="margin-left: 20px;">
+                        <a href="{% url 'news_detail' news_item.pk %}" class="news_title">{{ news_item.title }}</a><br>
+                        <span class="author">作者: {{ news_item.author }}</span><br>
+                        <span class="text">{{ news_item.text|truncatechars:80 }}...</span><br>
+                        发布时间: {{ news_item.pub_date|date:"Y-m-d H:i" }}<br>
+                        <i class="fas fa-fire"></i> {{ news_item.like_num }} | 
+                        <i class="fas fa-comments"></i> {{ news_item.comment_set.count }} | 
+                        <i class="fa-solid fa-clock-rotate-left"></i> {{ news_item.comment_num }}<br>
+                        <a href="{% url 'news_detail' news_item.pk %}"></a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="pagination">
+            <span class="step-links">
+                <a href="?page=1" class="pagination-button">首页</a>
+                {% if news_list.has_previous %}
+                    <a href="?page={{ news_list.previous_page_number }}" class="pagination-button">上一页</a>
+                {% endif %}
+                
+                
+                {% for page_number in nearby_pages %}
+                    {% if page_number == news_list.number %}
+                        <span class="current-page">{{ page_number }}</span>
+                    {% else %}
+                        <a href="?page={{ page_number }}" class="pagination-button">{{ page_number }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if news_list.has_next %}
+                    <a href="?page={{ news_list.next_page_number }}" class="pagination-button">下一页</a>
+                {% endif %}
+                <a href="?page={{ news_list.paginator.num_pages }}" class="pagination-button">尾页</a>
+                <br><br>
+                <form method="get" class="page-form">
+                    <input type="number" name="page" min="1" max="{{ news_page.paginator.num_pages }}">
+                    <button type="submit" style="padding: 5px 10px;font-size: 16px;background-color: #B0C4DE;color: white;border: none;border-radius: 4px;cursor: pointer;">跳转</button>
+                </form><br>
+                <span class="current-page">
+                    第{{ news_list.number }}页，共{{ news_list.paginator.num_pages }}页
+                </span><br>
+            </span>
+        </div>
+    </div>
+</body>
+</html>

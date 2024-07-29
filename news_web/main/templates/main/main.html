@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        body, ul {
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background: linear-gradient(to bottom, #00BFFF, #0066CC);
+            color: white; 
+            text-align: center; 
+            padding:20px 0; 
+            margin:0; 
+            top:0;
+            width: 100%; 
+            box-shadow: 0 2px 4px #ccc(0, 0, 0, 0.2); /* 添加阴影，制造立体感 */
+        }
+
+
+        .navbar a {
+            text-decoration: none; 
+            color: white; 
+            margin: 0 50px; 
+            font-size: large;
+        }
+        h1 {text-align: center;color: #333;}
+        h2 {
+            text-align: right;
+            font-family: Arial, sans-serif; 
+            font-size: 30px; 
+            font-weight: bold; 
+            color: #333; 
+        }
+        h2.center {
+            text-align: right;
+            margin-right: 200px; 
+        }
+        .news-container {
+            background-color: white; 
+            border-radius: 20px; 
+            border-color: #B0C4DE;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); 
+            padding: 20px; 
+            margin: 20px; 
+            border: 0.1px solid #333;
+        }
+        div {
+            text-align:left;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: space-between; 
+        }
+        li {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 10px;
+            background-color: #f5f5f5;
+            flex: 1; 
+            min-width: calc(20% - 10px);
+        }
+        li a {text-decoration: none;}
+        div button {
+            padding: 10px 20px; 
+            font-size: 16px; 
+            margin:0 auto;
+        }
+        li a {
+            display: block;
+            text-align: left;
+        }
+        li .author{
+            color:#708090;
+        }
+        li .text{
+            color:#B0C4DE;
+        }
+        .refresh-button {
+            padding: 5px 10px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .fa-sync-alt {
+            margin-right: 5px;
+        }
+        a.news_title{
+            color:black;
+            font-size: large;
+        }
+        .news-icon {
+            margin-right: 10px;
+            font-size: xx-large;
+        }
+        body {
+        margin-left: 200px; 
+        margin-right: 200px; 
+        }
+        .search-container {
+            text-align: center;
+            margin: 20px auto;
+            max-width: 1200px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+        .search-container label {
+            text-align: left;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .search-container input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        .search-container div{
+
+            align-items: center;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+        .search-container div label{
+            width:100px;
+            align-items: left;
+        }
+        .search-container div input{
+            align-items: left;
+        }
+        .search-container input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .search-container input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <title>新闻主页</title>
+</head>
+<body>
+    <div class="navbar">
+        <i class="fas fa-newspaper news-icon"></i>
+        <a href="http://127.0.0.1:8000/main/">新闻主页</a>
+        <a href="http://127.0.0.1:8000/main/category/">新闻分类</a>
+        <a href="http://127.0.0.1:8000/main/news_list/">新闻列表</a>
+        <a href="http://127.0.0.1:8000/main/search">新闻搜索</a>
+    </div>
+    <h1>爬虫新闻 主页</h1>
+    <div class="search-container">
+        <form method="GET" action="{% url 'search_results' %}">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="search_query" name="q" maxlength="50" required>
+            <br>
+        <div>
+            <label>排序方式：</label>
+            <input type="radio" id="sort_by_time" name="sort" value="time" checked style="align-items: left;">
+            <label for="sort_by_time">按时间排序</label> 
+            <input type="radio" id="sort_by_hot" name="sort" value="hot">
+            <label for="sort_by_hot">按热度排序</label>
+            <br>
+        </div>
+        <div>
+            <label>时间：</label>
+            {% for category in time_categories %}
+                <input type="checkbox" id="category_{{ category.id }}" name="categories" value="{{ category.id }}">
+                <label for="category_{{ category.id }}">{{ category.name }}</label>
+            {% endfor %}
+            <br>
+        </div>
+        <div>
+            <label>篇幅：</label>
+            {% for category in size_categories %}
+                <input type="checkbox" id="category_{{ category.id }}" name="categories" value="{{ category.id }}">
+                <label for="category_{{ category.id }}">{{ category.name }}</label>
+            {% endfor %}
+            <br>
+        </div>
+        <div>
+            <label>主题：</label>
+            {% for category in topic_categories %}
+                <input type="checkbox" id="category_{{ category.id }}" name="categories" value="{{ category.id }}">
+                <label for="category_{{ category.id }}">{{ category.name }}</label>
+            {% endfor %}
+            <br>
+        </div>
+            
+            <input type="submit" value="搜索">
+        </form>
+    </div>
+    <div>
+        <div class="news-container">
+            <h2 class="center" >随机新闻展示 <button class="refresh-button" style="margin-left:150px" onclick="location.reload()"><i class="fas fa-sync-alt"></i> 刷新</button></h2>
+            <ul>
+                {% for news_item in random_news %}
+                    <li>
+                        <a href="{% url 'news_detail' news_item.pk %}" class="news_title">{{ news_item.title }}</a><br>
+                        <span class="author">作者: {{ news_item.author }}</span><br>
+                        <span class="text">{{ news_item.text|truncatechars:80 }}...</span><br>
+                        {{ news_item.pub_date|date:"Y-m-d H:i" }}<br>
+                        <i class="fas fa-fire"></i> {{ news_item.like_num }} | 
+                        <i class="fas fa-comments"></i> {{ news_item.comment_set.count }} | 
+                        <i class="fa-solid fa-clock-rotate-left"></i> {{ news_item.comment_num }}<br>
+                        <a href="{% url 'news_detail' news_item.pk %}"></a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

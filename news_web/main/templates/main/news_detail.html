@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>正文页：{{news_item.title}}</title>
+    <style>
+        .paragraph{
+            text-indent: 2em;
+        }
+        body, ul {
+            padding: 0;
+            margin: 0;
+        }
+        body {
+        margin-left: 200px; 
+        margin-right: 200px; 
+        }
+        .navbar {
+            background: linear-gradient(to bottom, #00BFFF, #0066CC);
+            color: white; 
+            text-align: center; 
+            padding:20px 0; 
+            margin:0; 
+            top:0;
+            width: 100%; 
+            box-shadow: 0 2px 4px #ccc(0, 0, 0, 0.2); /* 添加阴影，制造立体感 */
+        }
+        .navbar a {
+            text-decoration: none; 
+            color: white; 
+            margin: 0 50px; 
+            font-size: large;
+        }
+        .news-icon {
+            margin-right: 10px;
+            font-size: xx-large;
+        }
+        .content-box {
+            border-top: 2px solid #ccc;
+            border-bottom: 2px solid #ccc;
+            padding-top:10px;
+            padding-bottom: 0px; 
+        }
+        .comment-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comment-item {
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            align-items: center; 
+        }
+
+        .comment-date {
+            color: #888;
+            font-size: 12px;
+        }
+
+        .no-comment {
+            color: #888;
+            font-style: italic;
+            justify-content: center; 
+            align-items: center; 
+        }
+
+        .comment-form {
+            margin-top: 20px;
+        }
+
+        .comment-textarea {
+            width: 88%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            vertical-align: middle;
+        }
+
+        .submit-comment-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            vertical-align: middle;
+        }
+
+        .delete-comment-button {
+            padding: 5px 10px;
+            font-size: 12px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .image-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            flex-wrap: wrap; 
+        }
+
+        .image-list li {
+            margin: 10px; /* 图片之间的间距 */
+        }
+
+        .no-image {
+            color: #888;
+            font-style: italic;
+        }
+        .category {
+        display: inline-block;
+        padding: 8px 16px; 
+        background-color: #007bff; 
+        color: white; 
+        text-decoration: none; 
+        border: none; 
+        border-radius: 4px; 
+        margin-right: 10px;
+        height:20px;
+    }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <i class="fas fa-newspaper news-icon"></i>
+        <a href="http://127.0.0.1:8000/main/">新闻主页</a>
+        <a href="http://127.0.0.1:8000/main/category/">新闻分类</a>
+        <a href="http://127.0.0.1:8000/main/news_list/">新闻列表</a>
+        <a href="http://127.0.0.1:8000/main/search">新闻搜索</a>
+    </div>
+    <h1>{{ news_item.title }}</h1>
+    <div class="content-box">
+    <span class="author" style="color:#B0C4DE;">作者: {{ news_item.author }}<br>
+    发布时间: {{ news_item.pub_date|date:"Y-m-d H:i" }}<br></span>
+    <i class="fas fa-fire" style="color:#708090;"></i> {{ news_item.like_num }} | 
+    <i class="fas fa-comments" style="color:#708090;"></i> {{ news_item.comment_set.count }} | 
+    <i class="fa-solid fa-clock-rotate-left" style="color:#708090;"></i> {{ news_item.comment_num }}<br>
+    <p>分类: 
+        {% for category in news_item.Categories.all %}
+            <a href="{% url 'category_detail' category.id %}" class="category">{{ category.name }}</a>
+        {% endfor %}
+    </p>
+    <p><a href="{{ news_item.news_url }}" target="_blank" class="category">点此跳转至原新闻</a></p>
+</div>
+    {% for paragraph in news_text %}
+        <p class="paragraph">{{ paragraph }}</p>
+    {% endfor %}
+    <h2>相关图片：</h2>
+    <ul class="image-list">
+        {% for i in images %}
+            <li><img src="/main/images/{{i.image_file}}" alt="News Image"></li>
+        {% empty %}
+            <li class="no-image">没有相关图片</li>
+        {% endfor %}
+    </ul>
+    <h2>评论：</h2>
+<ul class="comment-list">
+    {% for comment in comments %}
+        <li class="comment-item">
+            {{ comment.text }}
+            <br>
+            <span class="comment-date">发表时间：{{ comment.created_at|date:"Y-m-d H:i" }}</span>
+            <form method="post" action="{% url 'delete_comment' news_item.id comment.id %}">
+                {% csrf_token %}
+                <button type="submit" class="delete-comment-button">删除评论</button>
+            </form>
+        </li>
+    {% empty %}
+        <li class="no-comment">暂无评论。</li>
+    {% endfor %}
+</ul><br>
+<form method="post" class="comment-form">
+    {% csrf_token %}
+    <i class="fa-regular fa-comment"></i>
+    <label for="comment_text" style="font-size: large;">发表评论：</label><br>
+    <textarea id="comment_text" name="comment_text" rows="3" cols="40" class="comment-textarea"></textarea>
+    <button type="submit" class="submit-comment-button" rows="3">提交评论</button>
+</form><br><br>
+
+    
+
+</body>
+</html>

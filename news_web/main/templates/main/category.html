@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body, ul {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+        margin-left: 200px;
+        margin-right: 200px; 
+        }
+        .navbar {
+            background: linear-gradient(to bottom, #00BFFF, #0066CC);
+            color: white; 
+            text-align: center; 
+            padding:20px 0; 
+            margin:0; 
+            top:0;
+            width: 100%; 
+            box-shadow: 0 2px 4px #ccc(0, 0, 0, 0.2); /* 添加阴影，制造立体感 */
+        }
+
+
+        .navbar a {
+            text-decoration: none; 
+            color: white; 
+            margin: 0 50px; 
+            font-size: large;
+        }
+        .news-icon {
+            margin-right: 10px;
+            font-size: xx-large;
+        }
+        h1 {text-align: center;color: #333;}
+        .category-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .category-type {
+            flex: 1;
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+            height:400px;
+            width:500px;
+        }
+        .category-link {
+            display: block;
+            text-decoration: none;
+            margin: 5px 0;
+            padding: 5px 10px;
+            font-size: 16px;
+            background-color: 		#007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>新闻分类页</title>
+</head>
+<body>
+    <div class="navbar">
+        <i class="fas fa-newspaper news-icon"></i>
+        <a href="http://127.0.0.1:8000/main/">新闻主页</a>
+        <a href="http://127.0.0.1:8000/main/category/">新闻分类</a>
+        <a href="http://127.0.0.1:8000/main/news_list/">新闻列表</a>
+        <a href="http://127.0.0.1:8000/main/search">新闻搜索</a>
+    </div>
+    <ul>
+        <h1>新闻分类</h1>
+    <div class="category-container">
+        <!-- 时间类型的分类 -->
+        <div class="category-type">
+            <h2>时间</h2>
+            {% for category_info in time_categories %}
+                <a href="{% url 'category_detail' category_info.id %}" class="category-link">
+                    {{ category_info.name }} ({{ category_info.news_set.count }}条新闻)
+                </a>
+            {% endfor %}
+        </div>
+        
+        <!-- 篇幅类型的分类 -->
+        <div class="category-type">
+            <h2>篇幅</h2>
+            {% for category_info in size_categories %}
+                <a href="{% url 'category_detail' category_info.id %}" class="category-link">
+                    {{ category_info.name }} ({{ category_info.news_set.count }}条新闻)
+                </a>
+            {% endfor %}
+        </div>
+
+        <!-- 主题类型的分类 -->
+        <div class="category-type">
+            <h2>主题</h2>
+            {% for category_info in topic_categories %}
+                <a href="{% url 'category_detail' category_info.id %}" class="category-link">
+                    {{ category_info.name }} ({{ category_info.news_set.count }}条新闻)
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    </ul>
+</body>
+</html>
